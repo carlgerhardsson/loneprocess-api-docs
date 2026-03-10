@@ -12,16 +12,22 @@ Complete guide for integrating with the Löneprocess API.
 
 ---
 
-## 🔑 Authentication Flow
+## 🔥 Step-by-Step Integration
 
-### Step 1: Initialize Firebase
+### Step 1: Install Firebase SDK
+
+```bash
+npm install firebase
+```
+
+### Step 2: Initialize Firebase
 
 ```javascript
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "Get from API admin",
+  apiKey: "Get from admin",
   authDomain: "loneprocess-api-staging.firebaseapp.com",
   projectId: "loneprocess-api-staging"
 };
@@ -30,24 +36,29 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 ```
 
-### Step 2: Exchange Custom Token for ID Token
+### Step 3: Authenticate with Custom Token
 
 ```javascript
 import { signInWithCustomToken } from 'firebase/auth';
 
-const customToken = 'YOUR_CUSTOM_TOKEN_HERE';
+const customToken = process.env.FIREBASE_CUSTOM_TOKEN;
 
 try {
   const userCredential = await signInWithCustomToken(auth, customToken);
-  const idToken = await userCredential.user.getIdToken();
-  
-  console.log('✅ Authenticated!', idToken);
+  console.log('✅ Authenticated!');
 } catch (error) {
-  console.error('❌ Auth failed:', error);
+  console.error('❌ Auth failed:', error.message);
 }
 ```
 
-### Step 3: Use ID Token in API Requests
+### Step 4: Get ID Token
+
+```javascript
+const user = auth.currentUser;
+const idToken = await user.getIdToken();
+```
+
+### Step 5: Make API Requests
 
 ```javascript
 const response = await fetch('http://localhost:8000/api/v1/loneperiods', {
@@ -58,19 +69,20 @@ const response = await fetch('http://localhost:8000/api/v1/loneperiods', {
 });
 
 const periods = await response.json();
-console.log('Periods:', periods);
+console.log(`Found ${periods.length} periods`);
 ```
 
 ---
 
 ## 🔄 Token Refresh
 
-ID tokens expire after 1 hour. Refresh automatically:
+ID tokens expire after 1 hour. Set up auto-refresh:
 
 ```javascript
 auth.onIdTokenChanged(async (user) => {
   if (user) {
     const idToken = await user.getIdToken();
+    console.log('🔄 Token refreshed');
     // Update your API client with new token
   }
 });
@@ -78,7 +90,7 @@ auth.onIdTokenChanged(async (user) => {
 
 ---
 
-## 📡 API Client Example
+## 📡 Complete API Client Example
 
 ```javascript
 class LoneprocessAPI {
@@ -106,7 +118,7 @@ class LoneprocessAPI {
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
     return await response.json();
@@ -124,6 +136,12 @@ class LoneprocessAPI {
 
   async getEmployees(limit = 100) {
     return this.request(`/api/v1/la/employees?limit=${limit}`);
+  }
+
+  async getErrorsForPeriod(periodId, severity = null) {
+    let endpoint = `/api/v1/la/fellistor/${periodId}`;
+    if (severity) endpoint += `?severity=${severity}`;
+    return this.request(endpoint);
   }
 }
 
@@ -144,7 +162,7 @@ try {
     // Token expired - re-authenticate
     await signInWithCustomToken(auth, customToken);
   } else if (error.message.includes('429')) {
-    // Rate limited - wait
+    // Rate limited - wait before retry
     await new Promise(r => setTimeout(r, 1000));
   } else {
     console.error('API Error:', error);
@@ -161,6 +179,7 @@ try {
 3. **Implement retry logic** - For rate limiting and transient errors
 4. **Use TypeScript** - Type safety with API responses
 5. **Monitor token expiration** - Refresh before expiry
+6. **Store tokens securely** - Use environment variables
 
 ---
 
@@ -175,10 +194,10 @@ try {
 ## 🔍 Testing
 
 ```bash
-# Health check
+# Health check (no auth required)
 curl http://localhost:8000/health
 
-# Test endpoint (requires token)
+# Test with authentication
 curl -H "Authorization: Bearer YOUR_ID_TOKEN" \
      http://localhost:8000/api/v1/loneperiods
 ```

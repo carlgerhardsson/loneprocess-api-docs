@@ -49,7 +49,7 @@ curl -H "Authorization: Bearer YOUR_ID_TOKEN" \
 - **[Integration Guide](INTEGRATION_GUIDE.md)** - Complete integration walkthrough
 - **[Firebase Setup](FIREBASE_SETUP.md)** - Authentication setup
 - **[Test Data](TEST_DATA.md)** - Available test data
-- **[Examples](examples/)** - Code examples
+- **[Code Examples](examples/)** - JavaScript, TypeScript, cURL examples
 
 ---
 
@@ -57,14 +57,14 @@ curl -H "Authorization: Bearer YOUR_ID_TOKEN" \
 
 **Base URL:** `http://localhost:8000` (staging)
 
+**Swagger Documentation:** http://localhost:8000/docs
+
 ### Main Endpoints:
 
 - `GET /api/v1/loneperiods` - List salary periods
 - `GET /api/v1/activities` - List activities
 - `GET /api/v1/la/employees` - List employees
 - `GET /api/v1/la/fellistor/{period_id}` - Get error list
-
-**Swagger UI:** http://localhost:8000/docs
 
 ---
 

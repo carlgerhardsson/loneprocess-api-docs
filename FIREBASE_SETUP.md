@@ -12,7 +12,7 @@ How to set up Firebase authentication for the Löneprocess API.
 npm install firebase
 ```
 
-### Python
+### Python (Server-side)
 
 ```bash
 pip install firebase-admin
@@ -28,7 +28,7 @@ You'll receive these from your API administrator:
 
 ```javascript
 const firebaseConfig = {
-  apiKey: "Contact admin for this",
+  apiKey: "Contact admin for API key",
   authDomain: "loneprocess-api-staging.firebaseapp.com",
   projectId: "loneprocess-api-staging",
   storageBucket: "loneprocess-api-staging.appspot.com"
@@ -49,7 +49,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 // Your custom token from API admin
-const customToken = 'eyJhbGc...';
+const customToken = 'YOUR_CUSTOM_TOKEN_HERE';
 
 async function authenticate() {
   try {
@@ -85,7 +85,7 @@ auth.onIdTokenChanged(async (user) => {
   if (user) {
     const idToken = await user.getIdToken();
     console.log('🔄 Token refreshed:', idToken);
-    // Update API client
+    // Update your API client
   } else {
     console.log('❌ User signed out');
   }
@@ -106,7 +106,7 @@ auth.onIdTokenChanged(async (user) => {
 ### ❌ DON'T:
 - Commit tokens to Git
 - Share tokens between teams
-- Expose tokens in client-side code
+- Use tokens in client-side code publicly
 - Ignore token expiration
 
 ---

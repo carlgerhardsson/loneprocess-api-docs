@@ -168,27 +168,6 @@ All data in the staging environment is **fake test data** - no production or sen
 
 ---
 
-## 🏃 Körningsstatus (Running Status)
-
-**12 running status records (one per period)**
-
-### Sample Data:
-```json
-{
-  "id": "STATUS_202501",
-  "loneperiod_id": "202501",
-  "fas": "Avslut",
-  "status": "completed",
-  "started_at": "2025-01-01T08:00:00Z",
-  "completed_at": "2025-01-31T17:00:00Z",
-  "total_employees": 100,
-  "processed_employees": 100,
-  "errors_count": 0
-}
-```
-
----
-
 ## 🔄 Data Refresh
 
 **When is test data updated?**
