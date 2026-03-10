@@ -20,7 +20,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 // Your custom token from admin
-const CUSTOM_TOKEN = 'YOUR_CUSTOM_TOKEN_HERE';
+const CUSTOM_TOKEN = process.env.FIREBASE_CUSTOM_TOKEN || 'YOUR_CUSTOM_TOKEN_HERE';
 
 // API Base URL
 const API_BASE_URL = 'http://localhost:8000';
@@ -123,26 +123,33 @@ async function getErrorsForPeriod(periodId, severity = null) {
 async function main() {
   try {
     // 1. Authenticate
+    console.log('Authenticating...');
     await authenticate();
     
     // 2. Get all periods
+    console.log('\nFetching periods...');
     const periods = await getAllPeriods();
     console.log('Latest period:', periods[0]);
     
     // 3. Get preparation activities
+    console.log('\nFetching preparation activities...');
     const prepActivities = await getActivitiesByProcess('forberedelse');
     console.log('First activity:', prepActivities[0]);
     
     // 4. Get employees from Ekonomi org
+    console.log('\nFetching Ekonomi employees...');
     const ekonomiEmployees = await getEmployeesByOrg('1001');
     console.log('First employee:', ekonomiEmployees[0]);
     
     // 5. Get errors for January 2025
+    console.log('\nFetching January errors...');
     const januaryErrors = await getErrorsForPeriod('202501', 'error');
     console.log(`Critical errors in January: ${januaryErrors.length}`);
     
+    console.log('\n✅ All examples completed successfully!');
+    
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('\n❌ Error:', error.message);
   }
 }
 
